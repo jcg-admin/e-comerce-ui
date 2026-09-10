@@ -1,6 +1,6 @@
 # E2E de navegador (Playwright)
 
-Harness E2E full-stack del producto PracticaYoruba. Decisión de
+Harness E2E full-stack del producto Kaupamex. Decisión de
 herramienta y rationale: **ADR-FE-004** (Playwright). Alcance y reparto:
 iniciativa `implementar-e2e-navegador` en `kaupamex-docs`.
 
@@ -44,7 +44,7 @@ El script aplica el gate **Node 22** (L-012), **libera `:8000`/`:3001`**
 antes de arrancar (evita servir desde un servidor stale — H-UI-LOG-07) y
 arranca PostgreSQL → `migrate` → `create_seed_users` → `create_seed_catalog`
 → `runserver :8000` → `npm run dev :3001` → `npm run e2e`. Resuelve tanto
-el **monorepo** (`$PARENT/{api,db}`) como **clones separados hermanos**
+el **superproyecto** (`$PARENT/{api,db}`) como **clones separados hermanos**
 (`${UI_DIR%-ui}-{api,db}`, p.ej. `/home/user/kaupamex-{api,db,ui}`) —
 H-UI-LOG-05.
 

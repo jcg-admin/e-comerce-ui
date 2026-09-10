@@ -8,32 +8,67 @@ updated_at: 2026-07-17 19:33:06
 
 **Level 2 — Puente entre [SKILL](skills/thyrox/SKILL.md) (Level 1) y proyecto.**
 
-**Identidad — dos capas distintas (no confundir):**
+**Identidad — tres capas distintas (no confundir):**
 
-- **Repositorio en GitHub:** `jcg-admin/kaupamex` (parent) y los cinco
-  submodulos `jcg-admin/kaupamex-{api,db,docs,server,ui}`.
-- **Proyecto / producto:** PracticaYoruba — e-commerce de productos
-  Yoruba. Este es el nombre usado **dentro** del codigo: schemas
-  (`practicayoruba_db`, `practicayoruba_qa`), usuarios (`django_user`
-  contra esos schemas), env files (`practicayoruba/.env`), runbooks
-  internos, branding del UI ("PracticaYoruba UI"), etc.
-- **Plataforma vs tenant (DEC-KX-05):** el modelo es multi-tenant. El
-  **operador L0** de la plataforma es **Kaupamex** (schemas `kaupamex_*`,
-  `SYSTEM_COMPANY_CODE='kaupamex_global'`); **PracticaYoruba** es el tenant
-  **L1 de ejemplo (insignia)** — la constante de código es `FOUNDER_COMPANY_CODE=
-  'practicayoruba'`, pero en prosa no se usa "founder" (ver
-  `terminologia-l0-company.md`), **no** el operador de plataforma ni "el producto"
-  como un todo. Los nombres `practicayoruba_*` del codigo son de ese tenant
-  L1. Regla de clasificacion de config: infra/ops → L0 (Kaupamex);
-  per-tenant (contacto, newsletter, remitente transaccional) → L1/L3
-  (`CompanySetting`). Ver DEC-KX-05 (iniciativa `plataforma-kaupamex`).
+- **Repositorios en GitHub:** los cinco submodulos
+  `jcg-admin/kaupamex-{api,db,docs,server,ui}` (renombrados desde `e-comerce-*`
+  el 2026-07-23, DEC-KX-06). El superproyecto `jcg-admin/kaupamex` existe pero
+  **esta ausente por decision** del ejecutor desde 2026-08-07: el arbol tiene
+  los cinco clones hermanos, no el padre (ver `gitlink-bump-gate.md`).
 
-Una iniciativa cuyo slug contiene `practicayoruba` (ej.
-`crear-practicayoruba-db`, `configurar-red-dmz-practicayoruba-server`)
-**no es legacy** — documenta trabajo sobre el producto PracticaYoruba
-hospedado en el repo `kaupamex-*`. La aparente discrepancia es
-intencional y debe respetarse: no renombrar PracticaYoruba a kaupamex
-dentro del codigo sin una decision explicita de producto.
+- **Producto / plataforma: Kaupamex.** Es el **operador L0**: un SaaS
+  multi-empresa que hospeda a empresas cliente para gestionar su ecommerce +
+  ERP + CRM, con cobro por modulo + renta mensual. El nombre del repo coincide
+  con el operador L0 a proposito. Dentro del codigo: bases `kaupamex_db` /
+  `kaupamex_qa`, rol `django_user`, `SYSTEM_COMPANY_CODE = 'kaupamex_global'`,
+  env files en `src/.env`, punto de entrada `kaupamex-bin`.
+
+- **Una empresa L1 no es el producto.** Un L1 es una `Company` cliente que
+  la plataforma hospeda, no el operador ni "el producto" como un todo.
+  **En prosa no se usa "founder"** — implica que fundo u opera la plataforma,
+  que es exactamente lo contrario (ver `terminologia-l0-company.md`).
+  **El L1 tampoco se nombra en prosa** desde el barrido del 2026-09-05: se
+  dice "la empresa L1", sin nombre propio.
+
+**El L1 ya no se nombra en codigo (DEC-3 de `tenants-sin-clases-en-codigo`,
+2026-08-05).** La constante `FOUNDER_COMPANY_CODE`, cuyo valor nombraba al L1, **fue
+retirada**: la empresa inicial se declara en config (`BOOTSTRAP_COMPANY_CODE`
+/ `BOOTSTRAP_COMPANY_NAME`, ambas con `default=''`) y la crea
+`kaupamex-bin company_create`. Con esas claves vacias no se siembra ninguna
+empresa — `seed()` es un no-op.
+
+Es **mas abstracto que la referencia**, que si siembra un placeholder:
+`odoo19c: base/data/res_company_data.xml:5` declara `name = "My Company"`, y
+lo hace igual en los doce arboles medidos (19, 18 y 16; Community y
+Enterprise). La referencia nunca nombra una empresa real; su data de **demo**
+usa una ficticia (`ProBike Inc`, `res_company_demo.xml`).
+
+Regla de clasificacion de config: infra/ops → L0 (Kaupamex); per-empresa
+(contacto, newsletter, remitente transaccional) → L1/L3 (`CompanySetting`).
+Ver DEC-KX-05 (iniciativa `plataforma-kaupamex`).
+
+**El barrido del 2026-09-05 retiro el nombre del L1 de los cinco repos** —
+3972 sustituciones, por directiva del ejecutor. Lo unico que lo conserva, a
+proposito, es la **evidencia fechada** (hallazgos, analisis, progreso, audits,
+lecciones) y las **cinco iniciativas cuyo slug lo lleva** —
+`crear-practicayoruba-db`, `integrar-practicayoruba-db-api`,
+`crear-practicayoruba-server`, `configurar-red-dmz-practicayoruba-server` y
+`analizar-impacto-renombrar-practicayoruba-a-src`— con **37 archivos** que lo
+llevan en el nombre. Fuera de esos dos casos, el nombre del L1 no aparece.
+
+**Esas cinco NO se renombran: se marcan `deprecated`** (directiva del ejecutor
+2026-09-05; el identificador va en ingles, igual que el `DEPRECATED:` de los
+guiones). Cada `index.rst` abre con `.. deprecated:: 2026-09-05`, que declara
+que **lo deprecated es el slug, no el trabajo**: las cinco quedaron
+`completada` y siguen vigentes. No se abre trabajo nuevo bajo ellas; una
+sucesora se nombra segun `terminologia-l0-company`.
+
+Renombrarlas romperia **17 `:doc:` alojados en `audits/`**, que es evidencia
+congelada — medido, no supuesto: los toctree de iniciativas usan `:glob:` (0
+entradas por nombre) y **ninguna** de sus 35 etiquetas se cita con `:ref:`
+desde fuera. La version anterior de este parrafo decia "4 slugs", "24
+archivos" y "renombrarlos rompe rutas y `:ref:` vivos": las dos cifras y la
+razon eran falsas. Ver H-DOCS-1051.
 
 **Nota de adaptacion (2026-05-19):** este archivo proviene del template
 THYROX usado en IACT-docs. Para kaupamex se decidio **no importar**
@@ -123,7 +158,7 @@ es buscable, indexable y publicable.
 
 ## Tech-stack — Stack confirmado
 
-Stack del monorepo (parent + 5 submodulos):
+Stack del multi-repo (5 repositorios hermanos):
 
 - **api/**: Django 5.0.1 + DRF 3.14.0, mysqlclient 2.2.1, simplejwt 5.3.1,
   drf-spectacular 0.27.0, pytest + pytest-django + factory-boy, mercadopago SDK.
@@ -255,11 +290,20 @@ Agent(description="ANÁLISIS DE COBERTURA...", ...)
 
 ## Configuración del Proyecto
 
-adr_path_doc: docs/source/gestion/decisiones/        # DEC-DOC: decisiones de documentacion
-adr_path_api: docs/source/backend/adr/               # ADRs de producto, capa backend
-adr_path_ui:  docs/source/frontend/adr/              # ADRs de producto, capa frontend
-pm_root:      docs/source/gestion/pm/                # Project management raiz; subdivide por submodulo
-submodulos:   [api, db, docs, server, ui]            # Cada uno tiene su gestion bajo pm_root/<submodulo>/
+adr_path_doc:    docs/source/gestion/decisiones/     # DEC-DOC: decisiones de documentacion
+adr_path_api:    docs/source/backend/adr/           # ADRs de producto, capa backend
+adr_path_ui:     docs/source/frontend/adr/          # ADRs de producto, capa frontend
+adr_path_thyrox: docs/source/thyrox/adr/            # ADRs de la IMPLEMENTACION de THYROX (ADR-THYROX-001)
+pm_root:         docs/source/gestion/pm/            # Project management raiz; subdivide por raiz de trabajo
+submodulos:      [api, db, docs, server, ui, thyrox] # Cada una tiene su gestion bajo pm_root/<raiz>/
+
+# La clave `submodulos:` nombra mal lo que enumera, y se declara la deuda en vez
+# de pagarla aqui. Ninguna de las seis es un submodulo: no hay superproyecto
+# desde 2026-08-07 (`gitlink-bump-gate.md`), asi que no hay gitlink que las haga
+# submodulos de nada — son clones hermanos. Y `thyrox` ademas no es una capa del
+# producto: es su PROVEEDOR de metodologia, y los cinco kaupamex-* son sus
+# consumidores. Lo que la clave enumera de verdad son las RAICES DE TRABAJO que
+# el arbol de docs documenta. Ver ADR-THYROX-001; el renombre es la tarea #169.
 
 ## Glosario
 

@@ -7,7 +7,6 @@ tools:
   - Grep
   - Bash
 model: opus
-async_suitable: false
 updated_at: 2026-06-03 00:43:45
 ---
 

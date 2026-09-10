@@ -7,7 +7,6 @@ tools:
   - Grep
   - Bash
   - Write
-async_suitable: false
 updated_at: 2026-04-20 12:47:27
 ---
 
